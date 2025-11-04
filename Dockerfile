@@ -23,7 +23,7 @@ COPY . .
 # collect static files (use env var to control)
 ARG DJANGO_ENV=production
 ENV DJANGO_ENV=${DJANGO_ENV}
-RUN python manage.py collectstatic --noinput
+#RUN python manage.py collectstatic --noinput
 
 # run migrations at container start (entrypoint handles it)
 COPY ./compose/production/entrypoint.sh /entrypoint.sh
