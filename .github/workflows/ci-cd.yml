@@ -87,12 +87,17 @@ jobs:
         env:
           IMAGE: ${{ env.IMAGE_NAME }}:latest
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.DEPLOY_SSH_KEY }} ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} <<'EOF'
-            docker pull $IMAGE
-            docker stop app || true
-            docker rm app || true
-            docker run -d --name app --env-file /home/deploy/.env.prod -p 8000:8000 $IMAGE
-            # optionally run migrations & collectstatic in the container
-            docker exec -i app python manage.py migrate --noinput
-            docker exec -i app python manage.py collectstatic --noinput
+        - name: Copy deploy script and run on server (uses SSH)
+  env:
+    IMAGE: ${{ env.IMAGE_NAME }}:latest
+  run: |
+    ssh -o StrictHostKeyChecking=no -i "${{ secrets.DEPLOY_SSH_KEY }}" \
+      "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" << EOF
+        docker pull $IMAGE
+        docker stop app || true
+        docker rm app || true
+        docker run -d --name app --env-file /root/.env.prod -p 8000:8000 $IMAGE
+        docker exec -i app python manage.py migrate --noinput
+        docker exec -i app python manage.py collectstatic --noinput
 EOF
+
