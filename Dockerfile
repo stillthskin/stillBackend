@@ -7,7 +7,11 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # system deps for many Python packages (adjust as needed)
-RUN apt-get update && apt-get install -y build-essential libpq-dev netcat && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    netcat-traditional \
+ && rm -rf /var/lib/apt/lists/*
 
 # install pipenv/poetry or requirements.txt approach
 COPY requirements.txt .
