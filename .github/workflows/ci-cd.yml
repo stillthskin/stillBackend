@@ -73,6 +73,7 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:latest
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
   deploy:
     name: Deploy to server via SSH
     runs-on: ubuntu-latest
@@ -81,23 +82,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Install SSH client
         run: sudo apt-get update && sudo apt-get install -y openssh-client rsync
+
       - name: Copy deploy script and run on server (uses SSH)
         env:
           IMAGE: ${{ env.IMAGE_NAME }}:latest
         run: |
-        - name: Copy deploy script and run on server (uses SSH)
-  env:
-    IMAGE: ${{ env.IMAGE_NAME }}:latest
-  run: |
-    ssh -o StrictHostKeyChecking=no -i "${{ secrets.DEPLOY_SSH_KEY }}" \
-      "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" << EOF
-        docker pull $IMAGE
-        docker stop app || true
-        docker rm app || true
-        docker run -d --name app --env-file /root/.env.prod -p 8000:8000 $IMAGE
-        docker exec -i app python manage.py migrate --noinput
-        docker exec -i app python manage.py collectstatic --noinput
+          ssh -o StrictHostKeyChecking=no -i "${{ secrets.DEPLOY_SSH_KEY }}" \
+            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" << EOF
+              docker pull $IMAGE
+              docker stop app || true
+              docker rm app || true
+              docker run -d --name app --env-file /root/.env.prod -p 8000:8000 $IMAGE
+              docker exec -i app python manage.py migrate --noinput
+              docker exec -i app python manage.py collectstatic --noinput
 EOF
-
