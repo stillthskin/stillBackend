@@ -27,3 +27,4 @@ echo "🚀 Launching Gunicorn server..."
 exec gunicorn myproject.wsgi:application -w 3 -b 0.0.0.0:8000
 
 
+
