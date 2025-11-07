@@ -24,6 +24,6 @@ python manage.py collectstatic --noinput
 
 # Start Gunicorn
 echo "🚀 Launching Gunicorn server..."
-exec gunicorn myproject.wsgi:application -w 3 -b 0.0.0.0:8000
+exec gunicorn stillth_backend.wsgi:application -w 3 -b 0.0.0.0:8000
 
 
