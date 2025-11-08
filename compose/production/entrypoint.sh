@@ -12,18 +12,23 @@ if [ -n "$DATABASE_HOST" ]; then
   done
   echo "✅ Database is up!"
 else
-  echo "⚙️  Using SQLite (no DB wait needed)"
+  echo "⚙️ Using SQLite (no DB wait needed)"
 fi
 
 # Run migrations & collectstatic safely
-echo "⚙️  Applying migrations..."
+echo "⚙️ Applying migrations..."
 python manage.py migrate --noinput
 
 echo "📦 Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Start Gunicorn
+# Start Django (Gunicorn) in background
 echo "🚀 Launching Gunicorn server..."
-exec gunicorn stillth_backend.wsgi:application -w 3 -b 0.0.0.0:8000
+gunicorn stillth_backend.wsgi:application -w 3 -b 0.0.0.0:8000 &
 
+# Start the trading bot in foreground
+echo "🤖 Starting Trading Bot..."
+python manage.py runtrader &
 
+# Wait for all background processes to exit
+wait
