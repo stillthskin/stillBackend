@@ -114,3 +114,4 @@ jobs:
            docker exec -i app python manage.py collectstatic --noinput"
 
 
+
