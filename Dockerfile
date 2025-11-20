@@ -6,6 +6,9 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
+# Create static directory
+RUN mkdir -p /app/static
+
 # system deps for many Python packages (adjust as needed)
 RUN apt-get update && apt-get install -y \
     build-essential \
